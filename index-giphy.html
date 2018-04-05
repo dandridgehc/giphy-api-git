@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,72 +11,107 @@
     <link rel="stylesheet" href="assets/styles.css">
 
 </head>
+
 <body>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 
 
+    <div id="search-bar">
+        <input id="search-input" type="text" placeholder="What are you looking for?"></input>
+        <button id="search-button">SEARCH</button>
+    </div>
 
-<div id="button-container"> </div>
-<div id="giphy-container"> </div>
+    <div id="button-container"> </div>
+    <div id="giphy-container"> </div>
 
-<script>
-var buttons = ["baby sloths", "baby penguins", "baby vultures", "baby pigeons", "baby pigs"]
+    <script>
+        var buttons = ["baby sloths", "baby penguins", "baby vultures", "baby pigeons", "baby pigs"]
 
-for(var i=0; i<buttons.length; i++) {
-    var newButton = $("<button>");
-    newButton.text(buttons[i]);
-    newButton.addClass("buttons");
-    newButton.addClass("btn btn-info");
-    newButton.attr("button-data", buttons[i]);
-    $("#button-container").append(newButton)
-}
-
-$(".buttons").on("click",function(){
-    var data = $(this).attr("button-data")
-
-    console.log(data)
-
-    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + data + "&api_key=dc6zaTOxFJmzC&limit=10";
-   
- 
-
-    $.ajax({
-      url: queryURL,
-      method: "GET"
-    }).then(function(response) {
-     var res = response.data
-     $("#giphy-container").empty()
-      
-
-        for(var i=0; i<res.length; i++) {
-           // console.log(res[i]);
-            
-            var newImage = $("<img>");
-            newImage.css({
-                display:"block"
-            })
-
-            var newRating = $("<p>");
-            newRating.text(res[i].rating)
-
-
-            console.log(res[i].rating)
-            newImage.attr("src",res[i].images.fixed_height_still.url)
-
-           $("#giphy-container").append(newImage)
-           $("#giphy-container").append(newRating)
-
-
+        for (var i = 0; i < buttons.length; i++) {
+            makeButton(buttons[i])
         }
 
+//makes buttons from array
+        function makeButton(button) {
+            var newButton = $("<button>");
+            newButton.text(button);
+            newButton.addClass("buttons");
+            newButton.addClass("btn btn-info");
+            $(newButton).on("click", dataBinder(button));
+
+            $("#button-container").append(newButton)
+        }
+
+        $("#search-button").on("click", function () {
+            var searchInput = $("#search-input").val().trim();
+            makeButton(searchInput);
+            console.log(searchInput)
+        })
+
+       //gets data from string in array 
+        function dataBinder(data) {
+            
+            //gets gif url
+         return function getImages() {
+                
+
+                console.log(data)
+
+                var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + data + "&api_key=dc6zaTOxFJmzC&limit=2";
 
 
-    });
 
-})
+                $.ajax({
+                    url: queryURL,
+                    method: "GET"
+                }).then(function (response) {
+                    var res = response.data
+                    $("#giphy-container").empty()
 
+
+                    for (var i = 0; i < res.length; i++) {
+                        // console.log(res[i]);
+
+                        var newImage = $("<video>");
+                        var newSource = $("<source>");
+                        newImage.css({
+                            display: "block"
+                        })
+
+                        var newRating = $("<p>");
+                        newRating.text(res[i].rating)
+
+
+                        console.log(res[i].images.looping)
+
+                        newSource.attr("type", "video/mp4");
+                        newSource.attr("src", res[i].images.looping.mp4);
+                        newImage.on("click", function () {
+
+                            if (this.paused === true) {
+                                this.play();
+                            }
+
+                            else if (this.paused === false) {
+                                this.pause();
+                            }
+                        })
+                        newImage.append(newSource);
+
+                        $("#giphy-container").append(newImage)
+                        $("#giphy-container").append(newRating)
+
+
+                    }
+
+
+
+                });
+
+            }
+        }
 
 // write input in html
 // give it id
@@ -92,9 +128,10 @@ $(".buttons").on("click",function(){
 
 
 
-    
-     
+
+
     </script>
-    
+
 </body>
+
 </html>
