@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>   
+
+
+<div id="button-container"> </div>
+<div id="giphy-container"> </div>
+
+<script>
+var buttons = ["baby sloths", "baby penguins", "baby vultures", "baby pigeons", "baby pigs"]
+
+for(var i=0; i<buttons.length; i++) {
+    var newButton = $("<button>");
+    newButton.text(buttons[i]);
+    newButton.addClass("buttons");
+    newButton.attr("button-data", buttons[i]);
+    $("#button-container").append(newButton)
+}
+
+$(".buttons").on("click",function(){
+    var data = $(this).attr("button-data")
+
+    console.log(data)
+
+    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + data + "&api_key=dc6zaTOxFJmzC&limit=10";
+   
+ 
+
+    $.ajax({
+      url: queryURL,
+      method: "GET"
+    }).then(function(response) {
+     var res = response.data
+     $("#giphy-container").empty()
+      
+
+        for(var i=0; i<res.length; i++) {
+           // console.log(res[i]);
+            
+            var newImage = $("<img>");
+            newImage.css({
+                display:"block"
+            })
+
+            var newRating = $("<p>");
+            newRating.text(res[i].rating)
+
+
+            console.log(res[i].rating)
+            newImage.attr("src",res[i].images.fixed_height_still.url)
+
+           $("#giphy-container").append(newImage)
+           $("#giphy-container").append(newRating)
+
+
+        }
+
+
+
+    });
+
+})
+
+
+// write input in html
+// give it id
+//get value of input once you click add button
+//inside click event push to array that holds buttons
+// empty buttons first and loop through so you don't repeat buttons
+
+
+// to animate images
+// store a data attribute of data still 
+
+
+
+
+
+
+    
+     
+    </script>
+    
+</body>
+</html>
